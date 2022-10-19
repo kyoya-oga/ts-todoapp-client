@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
+import { useTaskStatusContext } from '../../context/TaskStatusContext';
 import { sendApiRequest } from '../../helpers/sendApiRequest';
 import { ICreateTask } from '../taskArea/interfaces/ICreateTask';
 import { Priority } from './enums/Priority';
@@ -25,6 +26,8 @@ const CreateTaskForm: FC = (): ReactElement => {
   const [priority, setPriority] = useState<string>(Priority.normal);
   const [status, setStatus] = useState<string>(Status.todo);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
+
+  const taskStatusContext = useTaskStatusContext();
 
   const createTaskMutation = useMutation((data: ICreateTask) =>
     sendApiRequest('http://localhost:8000/tasks', 'POST', data)
@@ -49,6 +52,7 @@ const CreateTaskForm: FC = (): ReactElement => {
   useEffect(() => {
     if (createTaskMutation.isSuccess) {
       setShowSuccess(true);
+      taskStatusContext.toggle();
     }
 
     const successTimeout = setTimeout(() => {
